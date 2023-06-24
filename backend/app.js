@@ -26,9 +26,7 @@ app.use(limiter);
 app.use(helmet());
 
 app.use(requestLogger);
-
 app.use(router);
-
 app.use(errorLogger);
 
 app.use(errors());
