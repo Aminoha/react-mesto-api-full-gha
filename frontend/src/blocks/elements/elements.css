@@ -1,0 +1,10 @@
+.elements {
+  margin: 0 auto;
+  padding-top: 51px;
+}
+
+@media screen and (max-width: 879px) {
+  .elements {
+    padding-top: 36px;
+  }
+}
