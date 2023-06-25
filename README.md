@@ -38,6 +38,6 @@
 
 IP 51.250.83.104;
 
-Frontend aminoha.mesto.nomoreparties.sbs;
+Frontend https://aminoha.mesto.nomoreparties.sbs;
 
-Backend api.aminoha.mesto.nomoreparties.sbs;
+Backend https://api.aminoha.mesto.nomoreparties.sbs;
