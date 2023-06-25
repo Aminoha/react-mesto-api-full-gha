@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Link, Route, Routes } from "react-router-dom";
+import CurrentUserContext from '../contexts/CurrentUserContext';
 
-const Header = ({ email, onSignOut }) => {
+const Header = ({ onSignOut }) => {
+const currentUser = useContext(CurrentUserContext)
+
   return (
     <header className="header">
       <div className="logo" />
@@ -26,7 +29,7 @@ const Header = ({ email, onSignOut }) => {
           path="/"
           element={
             <div className="header__user-info">
-              <p className="header__user-email">{email}</p>
+              <p className="header__user-email">{currentUser.email}</p>
               <button className="header__button-logout" onClick={onSignOut}>
                 Выйти
               </button>

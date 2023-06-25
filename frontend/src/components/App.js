@@ -14,7 +14,7 @@ import Login from "./Login";
 import Register from "./Register";
 import ProtectedRoute from "./ProtectedRoute";
 import InfoTooltip from "./InfoTooltip";
-import { getContent, authorize, register, setToken } from "../utils/auth";
+import { getContent, authorize, register } from "../utils/auth";
 
 const App = () => {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -26,7 +26,6 @@ const App = () => {
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [email, setEmail] = useState("");
   const [formValue, setFormValue] = useState({
     email: "",
     password: "",
@@ -67,8 +66,9 @@ const App = () => {
       .then((data) => {
         setFormValue({ email: "", password: "" });
         setIsLoggedIn(true);
-        setToken(data.jwt)
-        setEmail(email);
+        console.log(data);
+        api.setToken(data._id)
+        localStorage.setItem("jwt", data._id)
         navigate("/", { replace: true });
       })
       .catch((err) => {
@@ -79,8 +79,7 @@ const App = () => {
   const signOut = () => {
     localStorage.removeItem("jwt");
     setIsLoggedIn(false);
-    setEmail("");
-    setToken(null)
+    api.setToken(null)
     navigate("/sign-in", { replace: true });
   };
 
@@ -101,9 +100,8 @@ const App = () => {
     if (jwt) {
       getContent(jwt)
         .then((res) => {
-          setToken(jwt);
+          api.setToken(jwt);
           setIsLoggedIn(true);
-          setEmail(res.data.email);
           navigate("/", { replace: true });
         })
         .catch((err) => {
@@ -116,8 +114,8 @@ const App = () => {
     if (isLoggedIn) {
       Promise.all([api.getUserInfo(), api.getCardList()])
         .then(([user, cards]) => {
-          setCurrentUser(user);
-          setCards(cards);
+          setCurrentUser(user.data);
+          setCards(cards.data);
         })
         .catch((err) => {
           console.log(err);
@@ -154,7 +152,7 @@ const App = () => {
     api
       .setUserInfo(items)
       .then((user) => {
-        setCurrentUser(user);
+        setCurrentUser(user.data);
         closeAllPopups();
       })
       .catch((err) => {
@@ -166,7 +164,7 @@ const App = () => {
     api
       .setUserAvatar(item)
       .then((user) => {
-        setCurrentUser(user);
+        setCurrentUser(user.data);
         closeAllPopups();
       })
       .catch((err) => {
@@ -175,13 +173,13 @@ const App = () => {
   };
 
   const handleCardLike = (card) => {
-    const isLiked = card.likes.some((like) => like._id === currentUser._id);
+    const isLiked = card.likes.some((like) => like === currentUser._id);
     if (!isLiked) {
       api
         .putLike(card._id)
         .then((newCard) => {
           const newCards = cards.map((item) =>
-            item._id === card._id ? newCard : item
+            item._id === card._id ? newCard.data : item
           );
           setCards(newCards);
         })
@@ -194,7 +192,7 @@ const App = () => {
         .then((newCard) => {
           // Формируем новый массив на основе имеющегося, подставляя в него новую карточку
           const newCards = cards.map((item) =>
-            item._id === card._id ? newCard : item
+            item._id === card._id ? newCard.data : item
           );
           setCards(newCards);
         })
@@ -219,7 +217,7 @@ const App = () => {
     api
       .addCard(items)
       .then((newCard) => {
-        setCards([newCard, ...cards]);
+        setCards([newCard.data, ...cards]);
         closeAllPopups();
       })
       .catch((err) => {
@@ -230,7 +228,7 @@ const App = () => {
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        <Header email={email} onSignOut={signOut} />
+        <Header onSignOut={signOut} />
         <Routes>
           <Route
             path="/"

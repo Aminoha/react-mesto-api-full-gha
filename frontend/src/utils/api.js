@@ -1,6 +1,7 @@
 class Api {
-  constructor(path, headers) {
-    this._path = path;
+  constructor({url, headers}) {
+    this._url = url;
+    
     this._headers = headers;
   }
 
@@ -12,23 +13,24 @@ class Api {
   }
 
   setToken(token) {
+    console.log(this._headers);
     this._headers.Authorization = `Bearer ${token}`;
   }
 
   getCardList() {
-    return fetch(`${this._path}/cards`, {
+    return fetch(`${this._url}/cards`, {
       headers: this._headers,
     }).then(this._getJson);
   }
 
   getUserInfo() {
-    return fetch(`${this._path}/users/me`, {
+    return fetch(`${this._url}/users/me`, {
       headers: this._headers,
     }).then(this._getJson);
   }
 
   setUserInfo({ name, about }) {
-    return fetch(`${this._path}/users/me`, {
+    return fetch(`${this._url}/users/me`, {
       method: 'PATCH',
       headers: this._headers,
       body: JSON.stringify({
@@ -39,7 +41,7 @@ class Api {
   }
 
   setUserAvatar(data) {
-    return fetch(`${this._path}/users/me/avatar`, {
+    return fetch(`${this._url}/users/me/avatar`, {
       method: 'PATCH',
       headers: this._headers,
       body: JSON.stringify(data),
@@ -47,7 +49,7 @@ class Api {
   }
 
   addCard({ name, link }) {
-    return fetch(`${this._path}/cards`, {
+    return fetch(`${this._url}/cards`, {
       method: 'POST',
       headers: this._headers,
       body: JSON.stringify({
@@ -58,21 +60,21 @@ class Api {
   }
 
   deleteCard(cardId) {
-    return fetch(`${this._path}/cards/${cardId}`, {
+    return fetch(`${this._url}/cards/${cardId}`, {
       method: 'DELETE',
       headers: this._headers,
     }).then(this._getJson);
   }
 
   putLike(cardId) {
-    return fetch(`${this._path}/cards/${cardId}/likes`, {
+    return fetch(`${this._url}/cards/${cardId}/likes`, {
       method: 'PUT',
       headers: this._headers,
     }).then(this._getJson);
   }
 
   deleteLike(cardId) {
-    return fetch(`${this._path}/cards/${cardId}/likes`, {
+    return fetch(`${this._url}/cards/${cardId}/likes`, {
       method: 'DELETE',
       headers: this._headers,
     }).then(this._getJson);

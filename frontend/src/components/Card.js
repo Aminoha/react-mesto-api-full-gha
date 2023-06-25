@@ -16,13 +16,13 @@ const Card = ({ card, onCardClick, onCardLike, onCardDelete }) => {
     onCardDelete(card);
   };
 
-  const isOwn = card.owner._id === currentUser._id;
+  const isOwn = card.owner === currentUser._id;
   const cardDeleteButtonVisabilityAttribute = {
     visibility: isOwn ? "visible" : "hidden",
   };
 
   // Определяем, есть ли у карточки лайк, поставленный текущим пользователем
-  const isLiked = card.likes.some((like) => like._id === currentUser._id);
+  const isLiked = card.likes.some((like) => like === currentUser._id);
 
   // Создаём переменную, которую после зададим в `className` для кнопки лайка
   const cardLikeButtonClassName = `elements__icon ${

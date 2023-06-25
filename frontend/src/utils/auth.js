@@ -4,9 +4,6 @@ const getJson = (res) => {
   return res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`);
 };
 
-export const setToken = (token) => {
-  this._headers.Authorization = `Bearer ${token}`;
-}
 
 export const register = (password, email) => {
   return fetch(`${BASE_URL}/signup`, {
@@ -27,10 +24,6 @@ export const authorize = (password, email) => {
     body: JSON.stringify({ password, email }),
   })
     .then(getJson)
-    .then((data) => {
-      localStorage.setItem("jwt", data.token);
-      return data;
-    });
 };
 
 export const getContent = (token) => {
