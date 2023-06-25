@@ -1,8 +1,12 @@
-export const BASE_URL = "https://auth.nomoreparties.co";
+export const BASE_URL = "https://api.aminoha.mesto.nomoreparties.sbs";
 
 const getJson = (res) => {
   return res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`);
 };
+
+export const setToken = (token) => {
+  this._headers.Authorization = `Bearer ${token}`;
+}
 
 export const register = (password, email) => {
   return fetch(`${BASE_URL}/signup`, {

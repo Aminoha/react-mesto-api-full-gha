@@ -1,14 +1,7 @@
 class Api {
-  constructor(path, token) {
+  constructor(path, headers) {
     this._path = path;
-    this._token = token;
-  }
-
-  _getHeaders() {
-    return {
-      "Content-Type": "application/json",
-      authorization: this._token,
-    };
+    this._headers = headers;
   }
 
   _getJson(res) {
@@ -18,22 +11,26 @@ class Api {
     return Promise.reject(`Ошибка: ${res.status}`);
   }
 
+  setToken(token) {
+    this._headers.Authorization = `Bearer ${token}`;
+  }
+
   getCardList() {
     return fetch(`${this._path}/cards`, {
-      headers: this._getHeaders(),
+      headers: this._headers,
     }).then(this._getJson);
   }
 
   getUserInfo() {
     return fetch(`${this._path}/users/me`, {
-      headers: this._getHeaders(),
+      headers: this._headers,
     }).then(this._getJson);
   }
 
   setUserInfo({ name, about }) {
     return fetch(`${this._path}/users/me`, {
-      method: "PATCH",
-      headers: this._getHeaders(),
+      method: 'PATCH',
+      headers: this._headers,
       body: JSON.stringify({
         name: `${name}`,
         about: `${about}`,
@@ -43,16 +40,16 @@ class Api {
 
   setUserAvatar(data) {
     return fetch(`${this._path}/users/me/avatar`, {
-      method: "PATCH",
-      headers: this._getHeaders(),
+      method: 'PATCH',
+      headers: this._headers,
       body: JSON.stringify(data),
     }).then(this._getJson);
   }
 
   addCard({ name, link }) {
     return fetch(`${this._path}/cards`, {
-      method: "POST",
-      headers: this._getHeaders(),
+      method: 'POST',
+      headers: this._headers,
       body: JSON.stringify({
         name: `${name}`,
         link: `${link}`,
@@ -62,29 +59,32 @@ class Api {
 
   deleteCard(cardId) {
     return fetch(`${this._path}/cards/${cardId}`, {
-      method: "DELETE",
-      headers: this._getHeaders(),
+      method: 'DELETE',
+      headers: this._headers,
     }).then(this._getJson);
   }
 
   putLike(cardId) {
     return fetch(`${this._path}/cards/${cardId}/likes`, {
-      method: "PUT",
-      headers: this._getHeaders(),
+      method: 'PUT',
+      headers: this._headers,
     }).then(this._getJson);
   }
 
   deleteLike(cardId) {
     return fetch(`${this._path}/cards/${cardId}/likes`, {
-      method: "DELETE",
-      headers: this._getHeaders(),
+      method: 'DELETE',
+      headers: this._headers,
     }).then(this._getJson);
   }
 }
 
-const api = new Api(
-  "https://mesto.nomoreparties.co/v1/cohort-61",
-  "10e895f5-9c21-4560-ae6a-6a7ed41c5744"
-);
+const api = new Api({
+  url: 'https://api.aminoha.mesto.nomoreparties.sbs',
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: '',
+  },
+});
 
 export default api;

@@ -14,7 +14,7 @@ import Login from "./Login";
 import Register from "./Register";
 import ProtectedRoute from "./ProtectedRoute";
 import InfoTooltip from "./InfoTooltip";
-import { getContent, authorize, register } from "../utils/auth";
+import { getContent, authorize, register, setToken } from "../utils/auth";
 
 const App = () => {
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
@@ -99,6 +99,7 @@ const App = () => {
     if (jwt) {
       getContent(jwt)
         .then((res) => {
+          setToken(jwt);
           setIsLoggedIn(true);
           setEmail(res.data.email);
           navigate("/", { replace: true });
