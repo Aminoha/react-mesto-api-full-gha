@@ -67,6 +67,7 @@ const App = () => {
       .then((data) => {
         setFormValue({ email: "", password: "" });
         setIsLoggedIn(true);
+        setToken(data.jwt)
         setEmail(email);
         navigate("/", { replace: true });
       })
@@ -79,6 +80,7 @@ const App = () => {
     localStorage.removeItem("jwt");
     setIsLoggedIn(false);
     setEmail("");
+    setToken(null)
     navigate("/sign-in", { replace: true });
   };
 
