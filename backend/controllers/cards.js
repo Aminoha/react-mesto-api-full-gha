@@ -1,3 +1,4 @@
+const { mongoose } = require('mongoose');
 const Card = require('../models/card');
 const {
   InaccurateData,
@@ -17,7 +18,7 @@ const createCard = (req, res, next) => {
   Card.create({ name, link, owner })
     .then((card) => res.status(201).send({ data: card }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err instanceof mongoose.ValidationError) {
         return next(
           new InaccurateData(
             'Переданы некорректные данные при создании карточки',
@@ -37,11 +38,10 @@ const deleteCard = (req, res, next) => {
       if (card.owner.toString() !== req.user._id) {
         throw new NotPermission('Нет прав на удаление чужой картчоки');
       }
-
-      Card.findByIdAndRemove(req.params.cardId).then(() => res.send({ message: 'Карточка удалена' })).catch(next);
+      return card.deleteOne().then(() => res.send({ message: 'Карточка удалена' })).catch(next);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof mongoose.CastError) {
         return next(new InaccurateData('Некорректный id карточки'));
       }
       return next(err);
@@ -49,9 +49,10 @@ const deleteCard = (req, res, next) => {
 };
 
 const likeCard = (req, res, next) => {
+  const setType = req.method === 'PUT' ? '$addToSet' : '$pull';
   Card.findByIdAndUpdate(
     req.params.cardId,
-    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+    { [setType]: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
     .orFail(() => {
@@ -59,25 +60,7 @@ const likeCard = (req, res, next) => {
     })
     .then((card) => res.send({ data: card }))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return next(new InaccurateData('Некорректный id карточки'));
-      }
-      return next(err);
-    });
-};
-
-const dislikeCard = (req, res, next) => {
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true },
-  )
-    .orFail(() => {
-      throw new NotFound('Карточка с указанным _id не найдена');
-    })
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
+      if (err instanceof mongoose.CastError) {
         return next(new InaccurateData('Некорректный id карточки'));
       }
       return next(err);
@@ -89,5 +72,4 @@ module.exports = {
   createCard,
   deleteCard,
   likeCard,
-  dislikeCard,
 };
