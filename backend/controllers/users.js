@@ -74,15 +74,11 @@ const createUser = (req, res, next) => {
       email: user.email,
     }))
     .catch((err) => {
-      if (err instanceof mongoose.ValidationError) {
-        return next(
-          new InaccurateData(
-            'Переданы некорректные данные при создании пользователя',
-          ),
-        );
-      }
       if (err.code === 11000) {
         return next(new Conflict('Пользователь с таким email уже существует'));
+      }
+      if (err instanceof mongoose.ValidationError) {
+        return next(new InaccurateData('Переданы некорректные данные при создании пользователя'));
       }
       return next(err);
     });
