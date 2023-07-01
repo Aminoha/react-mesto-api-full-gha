@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { mongoose } = require('mongoose');
+const { ValidationError, CastError } = require('mongoose').Error;
 const User = require('../models/user');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
@@ -46,7 +46,7 @@ const getUserById = (req, res, next) => {
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err instanceof mongoose.CastError) {
+      if (err instanceof CastError) {
         return next(new InaccurateData('Некорректный id пользователя'));
       }
       return next(err);
@@ -77,7 +77,7 @@ const createUser = (req, res, next) => {
       if (err.code === 11000) {
         return next(new Conflict('Пользователь с таким email уже существует'));
       }
-      if (err instanceof mongoose.ValidationError) {
+      if (err instanceof ValidationError) {
         return next(new InaccurateData('Переданы некорректные данные при создании пользователя'));
       }
       return next(err);
@@ -95,7 +95,7 @@ const updateUser = (req, res, next) => {
     })
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err instanceof mongoose.ValidationError) {
+      if (err instanceof ValidationError) {
         return next(
           new InaccurateData(
             'Переданы некорректные данные при обновлении данных профиля пользователя',
